@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="wrap">
+    <div id="bar" style="width:900px; height:600px;float: left;"></div>
+    <div id="bar2" style="width:900px; height:600px;float: right"></div>
+</div>
+
+<script>
+    var chart = echarts.init(document.getElementById('bar'), 'white', { renderer: 'canvas' });
+    var chart2 = echarts.init(document.getElementById('bar2'), 'white', { renderer: 'canvas' });
+
+    var old_data = [];
+    $(
+        function () {
+            fetchData(chart);
+            setInterval(getDynamicData, 5000);
+        }
+    );
+
+    function fetchData() {
+        $.ajax({
+            type: "GET",
+            url: "{{url_for('core.get_line_chart')}}",
+            dataType: "json",
+            success: function (result) {
+                chart.setOption(result);
+                old_data = chart.getOption().series[0].data;
+                $.ajax({
+                    type: "GET",
+                    url: "{{url_for('core.bar_base')}}",
+                    dataType: "json",
+                    success: function (result) {
+                        chart2.setOption(result);
+                    }
+                });
+            }
+        });
+    }
+
+    function getDynamicData() {
+        $.ajax({
+            type: "GET",
+            url: "{{url_for('core.update_line_data')}}",
+            dataType: "json",
+            success: function (result) {
+                old_data.push([result.name, result.value]);
+                chart.setOption({
+                    series: [{ data: old_data }]
+                });
+            }
+        });
+    }
+
+</script>
+
+{% endblock %}

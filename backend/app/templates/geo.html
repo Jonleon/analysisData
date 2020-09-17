@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id='map' style='top: 20px;'></div>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoibGVhb2hhaSIsImEiOiJjazRucDF0eGIwYzc1M25zN21yaXM2M3JzIn0.Dhysu_33S1JpXD_uB478_A';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/leaohai/ck4nrr58o0twa1clpx2s3d8wa',
+        zoom: 7,
+        center: [139.6932, 35.6898]
+    });
+
+    map.on("load", function () {
+
+        map.addLayer({
+            id: "points",
+            type: "circle",
+            source: {
+                type: "geojson",
+                data: "{{ url_for('static',filename='points.geojson') }}"
+            },
+            paint: {
+                'circle-radius': {
+                    'base': 1,
+                    'stops': [[1, 0.5], [10, 3], [20, 10]]
+                },
+                'circle-color':
+                    '#FFFF00'
+
+            }
+        });
+    });
+</script>
+
+
+
+{% endblock %}

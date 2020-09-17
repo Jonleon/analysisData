@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="wrap">
+    <div id="Pie" style="width:1200px; height:800px;float: left;"></div>
+</div>
+
+<script>
+    let chart = echarts.init(document.getElementById('Pie'), 'white', { renderer: 'canvas' });
+
+    let old_data = [];
+    $(
+        function () {
+            fetchData(chart);
+        }
+    );
+
+    function fetchData() {
+        $.ajax({
+            type: "GET",
+            url: "{{url_for('core.getPieChart')}}",
+            dataType: "json",
+            success: function (result) {
+                chart.setOption(result);
+            }
+        });
+    }
+</script>
+
+{% endblock %}
